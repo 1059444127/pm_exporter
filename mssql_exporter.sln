@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28922.388
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pm.Service", "Pm.Service\Pm.Service.csproj", "{C8BEEDFB-DDCC-44C7-831D-2F7B04C492A6}"
 EndProject
@@ -23,8 +23,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8453A758-EBFE-435A-A480-A3F49CDF8873}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "Tests\UnitTestProject1\UnitTestProject1.csproj", "{B309016E-C264-44CF-B3EF-804239DF94E9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushGatewayTestServer", "Tests\PushGatewayTestServer\PushGatewayTestServer.csproj", "{5695E330-EC66-4C09-8867-020C47E77E26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pm.Common", "Pm.Common\Pm.Common.csproj", "{1AD7267E-1DDA-47B2-B0DC-4209A2F2D293}"
 EndProject
@@ -62,10 +60,6 @@ Global
 		{B309016E-C264-44CF-B3EF-804239DF94E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B309016E-C264-44CF-B3EF-804239DF94E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B309016E-C264-44CF-B3EF-804239DF94E9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5695E330-EC66-4C09-8867-020C47E77E26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5695E330-EC66-4C09-8867-020C47E77E26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5695E330-EC66-4C09-8867-020C47E77E26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5695E330-EC66-4C09-8867-020C47E77E26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AD7267E-1DDA-47B2-B0DC-4209A2F2D293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1AD7267E-1DDA-47B2-B0DC-4209A2F2D293}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AD7267E-1DDA-47B2-B0DC-4209A2F2D293}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -76,7 +70,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B309016E-C264-44CF-B3EF-804239DF94E9} = {8453A758-EBFE-435A-A480-A3F49CDF8873}
-		{5695E330-EC66-4C09-8867-020C47E77E26} = {8453A758-EBFE-435A-A480-A3F49CDF8873}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F636E494-58F2-47DE-A5F8-3009461FB2ED}

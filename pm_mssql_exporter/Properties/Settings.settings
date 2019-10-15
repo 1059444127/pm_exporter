@@ -1,0 +1,78 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="pm_mssql_exporter.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="JobName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">mssql_monitoring</Value>
+    </Setting>
+    <Setting Name="InstanceName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">auto</Value>
+    </Setting>
+    <Setting Name="IsEnabledPusher" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="PushGatewayUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:9091/metrics</Value>
+    </Setting>
+    <Setting Name="PushIntervalSec" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="IsEnabledServer" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ServerUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:7000/</Value>
+    </Setting>
+    <Setting Name="ConnStr" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionString&gt;Server=SRV-4\EX2014_KP;Database=master;Trusted_Connection=True;&lt;/ConnectionString&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Server=SRV-4\EX2014_KP;Database=master;Trusted_Connection=True;</Value>
+    </Setting>
+    <Setting Name="IsEnabledConnectionInfo" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="IsEnableOsPerfCounters" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OsPerformanceCounters" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;gauge  ; mssql_table_lock_escalations_per_sec ; Table Lock Escalations/sec  ;          ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_buffer_cache_hit_ratio         ; Buffer cache hit ratio      ;          ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_average_latch_wait_time_ms     ; Average Latch Wait Time (ms);          ;&lt;/string&gt;
+  &lt;string&gt;counter; mssql_activation_errors_total        ; Activation Errors Total     ;          ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_average_wait_time_ms           ; Average Wait Time (ms)      ; _Total   ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_lock_timeouts_per_sec          ; Lock Timeouts/sec           ; _Total   ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_lock_wait_time_ms              ; Lock Wait Time (ms)         ; _Total   ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_number_of_deadlocks_per_sec    ; Number of Deadlocks/sec     ; _Total   ;&lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_cache_hit_ratio                ; Cache Hit Ratio             ; _Total   ;   Plan Cache &lt;/string&gt;
+  &lt;string&gt;gauge  ; mssql_transactions_per_sec           ; Transactions/sec            ; _Total   ;&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="IsEnableCustomMetrics" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CustomMetrics" Type="Pm.MsSql.CustomMetricSettList" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfCustomMetricSett xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;CustomMetricSett Type="gauge" Name="mssql_transas_log_book_insert" IsEnabled="true"&gt;
+    &lt;Help&gt;row count of vtsdb.dbo.LogBook&lt;/Help&gt;
+    &lt;Sql&gt;select count(*) as cn from  vtsdb.dbo.logbook&lt;/Sql&gt;
+  &lt;/CustomMetricSett&gt;
+  &lt;CustomMetricSett Type="gauge" Name="mssql_vtsdb2_active" IsEnabled="true"&gt;
+    &lt;Help&gt;vessel by zone and receipt type&lt;/Help&gt;
+    &lt;Sql&gt;
+                                select z.RZoneVTS_Prefix, t.ReceiptType_Code, count(*) as cn
+                                from vtsdb2.nav.receiptActive as a
+                                join vtsdb2.nav.Receipt as r on r.Receipt_GUID = a.Receipt_GUID
+                                join vtsdb2.nsi.ReceiptType as t on t.ReceiptType_GUID = r.ReceiptType_GUID
+                                join vtsdb2.nsi.ResponsZoneVTS as z on z.ResponsZoneVTS_GUID = a.ResponsZoneVTS_GUID
+                                group by z.RZoneVTS_Prefix, t.ReceiptType_Code
+                            &lt;/Sql&gt;
+  &lt;/CustomMetricSett&gt;
+&lt;/ArrayOfCustomMetricSett&gt;</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

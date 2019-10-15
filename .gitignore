@@ -3,3 +3,20 @@
 ################################################################################
 
 /.vs/mssql_exporter
+/packages
+/Pm.Common/bin/Debug
+/Pm.Common/obj/Debug
+/Pm.Counter/bin/Debug
+/Pm.Counter/obj/Debug
+/Pm.Log/bin/Debug
+/Pm.Log/obj/Debug
+/Pm.MsSql/bin/Debug
+/Pm.MsSql/obj/Debug
+/Pm.Service/bin/Debug
+/Pm.Service/obj/Debug
+/pm_mssql_exporter/bin/Debug
+/pm_mssql_exporter/obj/Debug
+/pm_wmi_exporter/bin/Debug
+/pm_wmi_exporter/obj/Debug
+/Tests/UnitTestProject1/bin/Debug
+/Tests/UnitTestProject1/obj/Debug

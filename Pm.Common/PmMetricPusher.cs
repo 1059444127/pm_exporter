@@ -14,18 +14,15 @@ using System.Threading.Tasks;
 
 namespace Pm.Common
 {
-    public class PmMetricPusher : PmLongTask
+    public class PmMetricPusher : PmMetricLongTask
     {
-
-        private CollectorRegistry _collectorRegistry;
-
         private readonly HttpClient _httpClient = new HttpClient();
 
         private readonly Uri _targetUrl;
 
 
         public PmMetricPusher(CollectorRegistry collectorRegistry, string endpoint, string job, string instance = null, int intervalSeconds = 60)
-            : base(intervalSeconds)
+            : base(collectorRegistry, intervalSeconds)
         {
             Log = new PmLogger("MetricPusher");
 
@@ -46,7 +43,6 @@ namespace Pm.Common
 
             Log.LogDebug($"targetUri:{_targetUrl}");
 
-            _collectorRegistry = collectorRegistry;
         }
 
         private StringBuilder _sb = new StringBuilder(2048);
@@ -54,10 +50,16 @@ namespace Pm.Common
 
         protected override async Task WorkStep(CancellationToken ct)
         {
+            // если что-то не так, например нет подключения к SQL или еще что-то - ничего не делаем
+            if (!IsAllOkFunc())
+                return;
+
+            // если не удалось собрать данные - выходим
+            if (!CollectData(ref sb))
+                return;
+
             try
             {
-                _sb.Clear();
-                _collectorRegistry.CollectAndExportAsText(ref _sb, CancelToken);
                 var contents = _sb.ToString();
 
                 var httpContent = new StringContent(contents, Encoding.UTF8, "application/plain");
@@ -82,6 +84,10 @@ namespace Pm.Common
                 Log.LogError(ex);
 
                 Trace.WriteLine(string.Format("Error in MetricPusher: {0}", ex));
+            }
+            catch (Exception ex)
+            {
+     
             }
         }
     }

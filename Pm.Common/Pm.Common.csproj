@@ -42,10 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectorRegistry.cs" />
+    <Compile Include="FastLocker.cs" />
     <Compile Include="ICollector.cs" />
     <Compile Include="IMetric.cs" />
     <Compile Include="IMetricSource.cs" />
     <Compile Include="PmLongTask.cs" />
+    <Compile Include="PmMetricLongTask.cs" />
     <Compile Include="PmMetricPusher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PmMetricServer.cs" />

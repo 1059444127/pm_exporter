@@ -55,6 +55,11 @@ namespace pm_mssql_exporter
             return true;
         }
 
+        private bool _isSqlConnectionOk = false;
+        private bool _isInitiated = false;
+        private bool _isErrorWhenCollect = false;
+
+
         public void Init(IPmLogger logger)
         {
             _logger = logger;
@@ -64,15 +69,12 @@ namespace pm_mssql_exporter
         {
             _logger.LogInfo("Starting...");
 
-            InitServerAndPusher();
+            IsWorking = true;
 
-            _pmMetricPusher?.Start();
-            _pmMetricServer?.Start();
-            
+            _isSqlConnectionOk = IsSqlConnectionOk();
+            _isInitiated = false;
 
             base.Start();
-
-            IsWorking = true;
 
             _logger.LogInfo("Service started");
         }
@@ -85,11 +87,63 @@ namespace pm_mssql_exporter
             base.Stop();
         }
 
+        FastLocker _workStepLocker = new FastLocker();
 
         protected virtual async Task WorkStep(CancellationToken ct)
         {
-            // var sett = new Properties.Settings();
-            // sett.Reload();
+            // на шаге "основного" цикла необходимо проверять
+            // наличие подключения к SQL серверу
+            // в случае если его нет, или была SQL ошибка при collect метрик
+            // нужно отключать коллектор и проверять подключение до тех пор
+            // пока оно не заработает
+
+
+            // если есть ошибка при сборе метрик
+            // то это ошибка подключения, нужно переподключаться
+            if (_isErrorWhenCollect)
+            {
+                _isErrorWhenCollect = false;
+                _isSqlConnectionOk = false;
+            }
+
+            if (_isSqlConnectionOk)
+            {
+                // если подключение к SQL серверу работает
+
+                // если сервер/пушер не инициализированны
+                if (!_isInitiated)
+                {
+                    // остановим
+                    _pmMetricPusher?.Stop();
+                    _pmMetricServer?.Stop();
+
+                    // инициализируем
+                    InitServerAndPusher();
+
+                    // запустим
+                    _pmMetricPusher?.Start();
+                    _pmMetricServer?.Start();
+                }
+            }
+            else
+            {
+
+                // остановим
+                _pmMetricPusher?.Stop();
+                _pmMetricServer?.Stop();
+
+                // если с подключением к SQL проблема
+                // проверим подключение еще раз
+                _isSqlConnectionOk = IsSqlConnectionOk();
+
+                // сбросим марке ошибки
+                _isErrorWhenCollect = false;
+
+                _isInitiated = false;
+
+                // а на следующем тике если ОК попадем в блок выше
+            }
+
         }
 
         private void InitServerAndPusher()
@@ -97,14 +151,14 @@ namespace pm_mssql_exporter
             var sett = new Properties.Settings();
             sett.Reload();
 
-            PmMssqlSett.ConnectionString = sett.ConnStr;
+            _collectorRegistry?.Stop();
+            _collectorRegistry?.Clear();
 
             _collectorRegistry = new CollectorRegistry();
 
             // если указали auto - то нужно определить имя инстанса из ConnStr
             // если нет - то берем то что указали
-            var instanceName = GetInstanceName(sett.InstanceName, sett.ConnStr);
-
+            var instanceName = GetInstanceName(sett.InstanceName, PmMssqlSett.ConnectionString);
 
             try
             {
@@ -116,7 +170,12 @@ namespace pm_mssql_exporter
                     _logger.LogInfo($"  - InstanceName   : {instanceName}");
                     _logger.LogInfo($"  - PushIntervalSec: {sett.PushIntervalSec}");
 
+                    if (_pmMetricPusher != null) _pmMetricPusher.OnErrorWhenCollect -= ErrorWhenCollectEventHandler;
+
                     _pmMetricPusher = new PmMetricPusher(_collectorRegistry, sett.PushGatewayUri, sett.JobName, instanceName, sett.PushIntervalSec);
+
+                    _pmMetricPusher.OnErrorWhenCollect += ErrorWhenCollectEventHandler;
+                    _pmMetricPusher.IsAllOkFunc = () => _isSqlConnectionOk && _isInitiated;
                 }
 
             }
@@ -167,7 +226,7 @@ namespace pm_mssql_exporter
                     _logger.LogInfo($"  - {s.Name}");
             }
 
-            if (sett.IsEnableCustomMetrics &&  sett.CustomMetrics != null)
+            if (sett.IsEnableCustomMetrics && sett.CustomMetrics != null)
             {
                 _logger.LogInfo($"Init custom collectors...");
                 foreach (var m in sett.CustomMetrics.Where(c => c.IsEnabled))
@@ -177,6 +236,13 @@ namespace pm_mssql_exporter
                     _logger.LogInfo($"  - {m.Name}");
                 }
             }
+
+            _isInitiated = true;
+        }
+
+        private void ErrorWhenCollectEventHandler(object sender, EventArgs e)
+        {
+            _isErrorWhenCollect = true;
         }
 
         private string GetInstanceName(string instanceName, string connStr)
@@ -193,6 +259,28 @@ namespace pm_mssql_exporter
             else
             {
                 return instanceName;
+            }
+        }
+
+        private bool IsSqlConnectionOk()
+        {
+            try
+            {
+                var sett = new Properties.Settings();
+                sett.Reload();
+
+                using (var conn = new SqlConnection(sett.ConnStr))
+                {
+                    conn.Open();
+
+                    PmMssqlSett.ConnectionString = sett.ConnStr;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                PmMssqlSett.ConnectionString = "";
+                return false;
             }
         }
         private MsSqlDmOsPerformanceCounters.SettItem[] GetOsPerfCounterSett(StringCollection osPerformanceCounters)

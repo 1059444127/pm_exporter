@@ -23,6 +23,17 @@ namespace Pm.Common
 
         }
 
+        public void Clear()
+        {
+            _collectors.Clear();
+
+            Action act;
+            while (!_beforeCollectCallbacks.IsEmpty)
+            {
+                _beforeCollectCallbacks.TryTake(out act);
+            }
+        }
+
         /// <summary>
         /// Добавить счетчик
         /// </summary>

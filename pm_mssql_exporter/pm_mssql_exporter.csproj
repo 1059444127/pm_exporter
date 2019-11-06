@@ -82,4 +82,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(SolutionDir)\ILMerge\merge_all.bat" "$(SolutionDir)" "$(TargetPath)" $(ConfigurationName)
+
+echo pm_mssql_exporter.exe console &gt;"$(TargetPath)/Output/pm_mssql_exporter_console.bat"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
